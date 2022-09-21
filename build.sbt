@@ -66,7 +66,8 @@ lazy val root = (project in file("."))
       libraryDependencies ++= localAndCloudCommonDependencies,
       libraryDependencies ++= jdbcDrivers,
       libraryDependencies ++= Seq(
-      "org.apache.spark" %% "spark-core" % sparkVersion % "provided"
+      "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
+       "com.aerospike" %% "aerospike-spark" % "3.3.0_spark3.1-allshaded"
       )
   )
 

@@ -310,9 +310,10 @@ def test_feathr_materialize_to_aerospike():
     now = datetime.now()
     # set workspace folder by time; make sure we don't have write conflict if there are many CI tests running
     os.environ['SPARK_CONFIG__DATABRICKS__WORK_DIR'] = ''.join(['dbfs:/feathrazure_cijob','_', str(now.minute), '_', str(now.second), '_', str(now.microsecond)]) 
-    os.environ['SPARK_CONFIG__AZURE_SYNAPSE__WORKSPACE_DIR'] = ''.join(['abfss://feathrazuretest3fs@feathrazuretest3storage.dfs.core.windows.net/feathr_github_ci','_', str(now.minute), '_', str(now.second) ,'_', str(now.microsecond)]) 
-    
-    client = FeathrClient(config_path="feathr_config.yaml")
+    os.environ['SPARK_CONFIG__AZURE_SYNAPSE__WORKSPACE_DIR'] = ''.join(['abfss://feathrazuretest3fs@feathrazuretest3storage.dfs.core.windows.net/feathr_github_ci','_', str(now.minute), '_', str(now.second) ,'_', str(now.microsecond)])
+    os.environ[f"AEROSPIKE_USER"] = "feathruser"
+    os.environ[f"AEROSPIKE_PASSWORD"] = "feathr"
+    client = FeathrClient(config_path="test_user_workspace/feathr_config.yaml")
     batch_source = HdfsSource(name="nycTaxiBatchSource",
                               path="wasbs://public@azurefeathrstorage.blob.core.windows.net/sample_data/green_tripdata_2020-04.csv",
                               event_timestamp_column="lpep_dropoff_datetime",
@@ -382,8 +383,6 @@ def test_feathr_materialize_to_aerospike():
         2020, 5, 20), end=datetime(2020, 5, 20), step=timedelta(days=1))
 
     now = datetime.now()
-    os.environ[f"aerospike_USER"] = "feathruser"
-    os.environ[f"aerospike_PASSWORD"] = "feathr"
     as_sink = AerospikeSink(name="aerospike",seedhost="20.57.186.153", port=3000, namespace="test", setname="test")
     settings = MaterializationSettings("nycTaxiTable",
                                        sinks=[as_sink],
